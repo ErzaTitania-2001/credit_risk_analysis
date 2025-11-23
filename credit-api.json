@@ -1,0 +1,118 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hackathon Credit System",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://unmachined-cymographic-mignon.ngrok-free.dev"
+    }
+  ],
+  "paths": {
+    "/get_data": {
+      "post": {
+        "summary": "Step 1: Get User Info",
+        "operationId": "getData",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "member_id": { "type": "integer", "description": "User ID (e.g., 101)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fico_range_high": { "type": "number" },
+                    "annual_inc": { "type": "number" },
+                    "loan_amnt": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risk_score": {
+      "post": {
+        "summary": "Step 2: Calculate Risk",
+        "operationId": "getRisk",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fico_range_high": { "type": "number" },
+                  "annual_inc": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "risk_score": { "type": "number" },
+                    "risk_category": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calc_ecl": {
+      "post": {
+        "summary": "Step 3: Calculate Loss",
+        "operationId": "getECL",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "loan_amnt": { "type": "number" },
+                  "risk_score": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "expected_credit_loss": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

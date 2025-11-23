@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Risk API - Demo Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+        
+        .error {
+            background: #ffe0e0;
+            border-left-color: #dc3545;
+            color: #dc3545;
+        }
+        
+        .success {
+            background: #e0ffe0;
+            border-left-color: #28a745;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .badge-low {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏦 Credit Risk API Demo</h1>
+        
+        <div class="card">
+            <h2>Step 1: Get User Data</h2>
+            <div class="form-group">
+                <label>Member ID</label>
+                <input type="number" id="memberId" placeholder="Enter member ID (e.g., 68407277)">
+            </div>
+            <button onclick="getUserData()">Get User Data</button>
+            <div class="result" id="result1"></div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>Step 2: Calculate Risk Score</h2>
+                <div class="form-group">
+                    <label>FICO Score</label>
+                    <input type="number" id="fico" placeholder="300-850">
+                </div>
+                <div class="form-group">
+                    <label>Annual Income ($)</label>
+                    <input type="number" id="income" placeholder="e.g., 55000">
+                </div>
+                <button onclick="calculateRisk()">Calculate Risk</button>
+                <div class="result" id="result2"></div>
+            </div>
+            
+            <div class="card">
+                <h2>Step 3: Calculate Expected Loss</h2>
+                <div class="form-group">
+                    <label>Loan Amount ($)</label>
+                    <input type="number" id="loanAmount" placeholder="e.g., 10000">
+                </div>
+                <div class="form-group">
+                    <label>Risk Score (0-100)</label>
+                    <input type="number" id="riskScore" placeholder="e.g., 20.12">
+                </div>
+                <button onclick="calculateECL()">Calculate ECL</button>
+                <div class="result" id="result3"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Complete Workflow</h2>
+            <div class="form-group">
+                <label>Member ID for Complete Analysis</label>
+                <input type="number" id="fullMemberId" placeholder="Enter member ID (e.g., 68407277)">
+            </div>
+            <button onclick="runCompleteFlow()">Run Complete Analysis</button>
+            <div class="result" id="resultFull"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'API request failed');
+                }
+                
+                return { success: true, data };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+        
+        function showResult(elementId, success, content, extraClass = '') {
+            const element = document.getElementById(elementId);
+            element.className = `result show ${success ? 'success' : 'error'} ${extraClass}`;
+            element.innerHTML = `<pre>${content}</pre>`;
+        }
+        
+        async function getUserData() {
+            const memberId = document.getElementById('memberId').value;
+            if (!memberId) {
+                showResult('result1', false, 'Please enter a member ID');
+                return;
+            }
+            
+            const result = await apiCall('/get_data', 'POST', { member_id: parseInt(memberId) });
+            
+            if (result.success) {
+                const data = result.data;
+                // Auto-fill other forms
+                document.getElementById('fico').value = data.fico_range_high;
+                document.getElementById('income').value = data.annual_inc;
+                document.getElementById('loanAmount').value = data.loan_amnt;
+                
+                showResult('result1', true, 
+                    `✓ User Found!\n\n` +
+                    `Member ID: ${data.member_id}\n` +
+                    `Annual Income: $${data.annual_inc.toLocaleString()}\n` +
+                    `FICO Score: ${data.fico_range_high}\n` +
+                    `Loan Amount: $${data.loan_amnt.toLocaleString()}\n` +
+                    `Loan Status: ${data.loan_status || 'N/A'}`
+                );
+            } else {
+                showResult('result1', false, `✗ Error: ${result.error}`);
+            }
+        }
+        
+        async function calculateRisk() {
+            const fico = document.getElementById('fico').value;
+            const income = document.getElementById('income').value;
+            
+            if (!fico || !income) {
+                showResult('result2', false, 'Please enter FICO score and income');
+                return;
+            }
+            
+            const result = await apiCall('/risk_score', 'POST', {
+                fico_range_high: parseFloat(fico),
+                annual_inc: parseFloat(income)
+            });
+            
+            if (result.success) {
+                const data = result.data;
+                // Auto-fill risk score for ECL calculation
+                document.getElementById('riskScore').value = data.risk_score;
+                
+                const badgeClass = data.risk_category === 'Low' ? 'badge-low' : 
+                                  data.risk_category === 'Medium' ? 'badge-medium' : 'badge-high';
+                
+                showResult('result2', true,
+                    `✓ Risk Calculated!\n\n` +
+                    `Risk Score: ${data.risk_score}\n` +
+                    `Risk Category: ${data.risk_category}` +
+                    `\n\n<span class="badge ${badgeClass}">${data.risk_category} Risk</span>`
+                );
+            } else {
+                showResult('result2', false, `✗ Error: ${result.error}`);
+            }
+        }
+        
+        async function calculateECL() {
+            const loanAmount = document.getElementById('loanAmount').value;
+            const riskScore = document.getElementById('riskScore').value;
+            
+            if (!loanAmount || !riskScore) {
+                showResult('result3', false, 'Please enter loan amount and risk score');
+                return;
+            }
+            
+            const result = await apiCall('/calc_ecl', 'POST', {
+                loan_amnt: parseFloat(loanAmount),
+                risk_score: parseFloat(riskScore)
+            });
+            
+            if (result.success) {
+                const data = result.data;
+                const lossPercentage = ((data.expected_credit_loss / parseFloat(loanAmount)) * 100).toFixed(2);
+                
+                showResult('result3', true,
+                    `✓ Expected Credit Loss Calculated!\n\n` +
+                    `Loan Amount: $${parseFloat(loanAmount).toLocaleString()}\n` +
+                    `Expected Loss: $${data.expected_credit_loss.toLocaleString()} ${data.currency}\n` +
+                    `Loss Percentage: ${lossPercentage}%`
+                );
+            } else {
+                showResult('result3', false, `✗ Error: ${result.error}`);
+            }
+        }
+        
+        async function runCompleteFlow() {
+            const memberId = document.getElementById('fullMemberId').value;
+            if (!memberId) {
+                showResult('resultFull', false, 'Please enter a member ID');
+                return;
+            }
+            
+            showResult('resultFull', true, '⏳ Running complete analysis...');
+            
+            // Step 1: Get user data
+            const userData = await apiCall('/get_data', 'POST', { member_id: parseInt(memberId) });
+            if (!userData.success) {
+                showResult('resultFull', false, `✗ Step 1 Failed: ${userData.error}`);
+                return;
+            }
+            
+            // Step 2: Calculate risk
+            const riskData = await apiCall('/risk_score', 'POST', {
+                fico_range_high: userData.data.fico_range_high,
+                annual_inc: userData.data.annual_inc
+            });
+            if (!riskData.success) {
+                showResult('resultFull', false, `✗ Step 2 Failed: ${riskData.error}`);
+                return;
+            }
+            
+            // Step 3: Calculate ECL
+            const eclData = await apiCall('/calc_ecl', 'POST', {
+                loan_amnt: userData.data.loan_amnt,
+                risk_score: riskData.data.risk_score
+            });
+            if (!eclData.success) {
+                showResult('resultFull', false, `✗ Step 3 Failed: ${eclData.error}`);
+                return;
+            }
+            
+            // Display complete result
+            const lossPercentage = ((eclData.data.expected_credit_loss / userData.data.loan_amnt) * 100).toFixed(2);
+            const badgeClass = riskData.data.risk_category === 'Low' ? 'badge-low' : 
+                              riskData.data.risk_category === 'Medium' ? 'badge-medium' : 'badge-high';
+            
+            showResult('resultFull', true,
+                `✓ Complete Analysis Successful!\n\n` +
+                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                `BORROWER PROFILE\n` +
+                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                `Member ID: ${userData.data.member_id}\n` +
+                `Annual Income: $${userData.data.annual_inc.toLocaleString()}\n` +
+                `FICO Score: ${userData.data.fico_range_high}\n` +
+                `Requested Loan: $${userData.data.loan_amnt.toLocaleString()}\n\n` +
+                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                `RISK ASSESSMENT\n` +
+                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                `Risk Score: ${riskData.data.risk_score} / 100\n` +
+                `Risk Category: ${riskData.data.risk_category}\n\n` +
+                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                `FINANCIAL IMPACT\n` +
+                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                `Expected Credit Loss: $${eclData.data.expected_credit_loss.toLocaleString()}\n` +
+                `Loss Percentage: ${lossPercentage}%\n` +
+                `Net Expected Value: $${(userData.data.loan_amnt - eclData.data.expected_credit_loss).toLocaleString()}\n\n` +
+                `<span class="badge ${badgeClass}">${riskData.data.risk_category} Risk Borrower</span>`
+            );
+        }
+    </script>
+</body>
+</html>
