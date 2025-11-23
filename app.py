@@ -224,4 +224,8 @@ if __name__ == "__main__":
     logger.info("  POST /risk_score  - Calculate risk score")
     logger.info("  POST /calc_ecl    - Calculate expected credit loss")
     logger.info("="*50)
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    
+    # Use PORT from environment (for cloud platforms) or default to 5000
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

@@ -1,0 +1,131 @@
+EXAMPLE PROMPTS FOR CREDIT RISK AGENT
+
+=== Member-Based Analysis (Database Lookup) ===
+
+Low Risk Examples:
+- "Analyze credit risk for member 63044350"
+- "What's the risk assessment for member 63044350?"
+- "Evaluate loan application for member 65190234"
+- "Get credit profile for member -29890"
+
+High Risk Examples:
+- "Evaluate loan application for member -76653"
+- "Analyze member -76653"
+- "What's the credit risk for member -34711?"
+
+General Member Queries:
+- "Look up member 105"
+- "Retrieve borrower data for member 63044350"
+- "Show me information for member -76653"
+
+=== Direct Calculations (No Database Lookup) ===
+
+Risk Score Calculations:
+- "Calculate credit risk for FICO 600 and income $45,000"
+- "What's the risk for someone with FICO 750 and income $80,000?"
+- "Assess risk for FICO 500 and annual income $30,000"
+- "Calculate risk score for FICO 700 and income $65,000"
+- "What's the risk for FICO 650 and income $55,000?"
+
+Expected Credit Loss Only:
+- "Calculate expected credit loss for a $20,000 loan with risk score 35"
+- "What's the ECL for a $15,000 loan with risk score 23.53?"
+- "Calculate ECL for $10,000 loan and risk score 50"
+- "Expected loss on $25,000 loan with 45 risk score"
+
+=== Complete Risk Assessments (Multi-Step) ===
+
+Full Analysis:
+- "I need a complete risk assessment: FICO is 650, income is $55,000, and loan amount is $15,000"
+- "Full analysis for FICO 700, income $70,000, loan $20,000"
+- "Complete assessment: FICO 600, income $45,000, requesting $12,000 loan"
+- "Analyze borrower with FICO 750, income $80,000, seeking $18,000"
+
+Scenario Comparisons:
+- "Compare risk for FICO 600 vs FICO 700 with same income of $50,000"
+- "What's the difference in ECL for $15,000 vs $20,000 loan at risk score 30?"
+- "How does income of $50,000 vs $80,000 affect risk for FICO 650?"
+
+=== Edge Cases and Boundary Tests ===
+
+Boundary Values:
+- "Calculate risk for minimum FICO 300 and income $1"
+- "What's the risk for maximum FICO 850 and income $1,000,000?"
+- "Assess risk score exactly 30 with $10,000 loan"
+- "ECL for risk score exactly 60 with $15,000 loan"
+
+Zero/Minimal Values:
+- "Calculate risk for FICO 650 and zero income"
+- "What's ECL for $0 loan with risk score 50?"
+- "Risk for FICO 300 and income $100"
+
+High Values:
+- "Calculate risk for FICO 850 and income $500,000"
+- "ECL for $1,000,000 loan with risk score 5"
+
+=== Error/Invalid Prompts (For Testing) ===
+
+Non-Existent Members:
+- "Analyze credit risk for member 999999999"
+- "Look up member 12345678"
+- "Evaluate member 0"
+
+Invalid FICO:
+- "Calculate risk for FICO 200 and income $50,000"
+- "What's risk for FICO 900 and income $60,000?"
+- "Risk for FICO -100 and income $40,000"
+
+Invalid Income:
+- "Calculate risk for FICO 700 and income -$50,000"
+- "Risk for FICO 650 and negative income"
+
+Missing Information:
+- "Calculate credit risk for annual income $50,000" (missing FICO)
+- "What's the risk for FICO score 700?" (missing income)
+- "Calculate risk for a borrower" (missing all parameters)
+
+Vague Requests:
+- "Tell me about credit"
+- "What is risk?"
+- "Help me with loans"
+
+=== Conversational/Natural Prompts ===
+
+- "I'm applying for a $15,000 loan. My FICO is 680 and I make $62,000 per year. What are my chances?"
+- "Can you check if member 63044350 is a good candidate for approval?"
+- "My credit score is 620 and my income is $48,000. Should I be concerned about default risk?"
+- "What would be the expected loss on a $20,000 loan if the risk is considered medium?"
+- "Is FICO 300 really bad? What does that mean for loan approval?"
+- "Compare the risk between member 63044350 and member -76653"
+
+=== Follow-Up Questions ===
+
+After Risk Calculation:
+- "What if the income was $10,000 higher?"
+- "How much would the ECL change with a $5,000 larger loan?"
+- "What FICO score would I need to get into low risk?"
+- "Explain why this is considered high risk"
+
+After Member Lookup:
+- "Calculate their expected credit loss"
+- "What's their risk category?"
+- "Is this borrower approvable?"
+- "Compare this to member 63044350"
+
+=== Use Case Specific ===
+
+Loan Officer:
+- "Quick assessment for walk-in customer: FICO 690, income $58,000, wants $12,000"
+- "Batch check these members: 63044350, -76653, 65190234"
+
+Risk Manager:
+- "What's our exposure on a $50,000 loan portfolio with average risk score 35?"
+- "Calculate ECL for worst-case scenario: $30,000 loan, risk score 70"
+
+Underwriter:
+- "Member -76653 was previously declined. What was their risk score?"
+- "Verify if member 63044350 qualifies for premium rate"
+
+Portfolio Analyst:
+- "What percentage of our borrowers are in high risk category?"
+- "Average ECL for medium risk borrowers?"

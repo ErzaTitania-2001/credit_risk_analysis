@@ -1,0 +1,198 @@
+FREQUENTLY ASKED QUESTIONS - CREDIT RISK ASSESSMENT
+
+=== General Questions ===
+
+Q: What is this credit risk system?
+A: An automated credit risk assessment tool that evaluates loan applications by analyzing FICO scores, annual income, and loan amounts to calculate risk scores and expected credit losses.
+
+Q: What data does this system use?
+A: Real loan data from Lending Club (2007-2018) sourced from Kaggle, containing 200 sample borrowers with diverse risk profiles from a dataset of 2+ million loans.
+
+Q: How accurate are the risk predictions?
+A: The system uses a simplified risk model based on FICO scores and income. It's designed for demonstration purposes. Production systems would include additional factors like debt-to-income ratio, employment history, and payment history.
+
+=== FICO Scores ===
+
+Q: What is a FICO score?
+A: A credit score ranging from 300-850 that indicates creditworthiness based on credit history, payment behavior, and debt levels. Higher scores indicate lower credit risk.
+
+Q: What's a good FICO score?
+A: 
+- 800-850: Exceptional
+- 740-799: Very Good
+- 670-739: Good
+- 580-669: Fair
+- 300-579: Poor
+
+Q: What does FICO 300 mean?
+A: The worst possible credit score, indicating severe credit problems, likely multiple defaults, bankruptcies, or no credit history.
+
+Q: What does FICO 850 mean?
+A: The perfect credit score, indicating flawless credit management, on-time payments, and responsible debt usage.
+
+Q: Why are some borrowers at FICO 300?
+A: These are typically rejected loan applications from the Kaggle dataset, representing high-risk applicants with poor credit histories.
+
+=== Risk Scores ===
+
+Q: What does the risk score mean?
+A: A 0-100 score indicating default probability. 0 means minimal risk (excellent borrower), 100 means maximum risk (certain default).
+
+Q: How is the risk score calculated?
+A: Base Score = 100 - (FICO / 8.5). If income exceeds $80,000, subtract 15 points. The final score is clamped between 0 and 100.
+
+Q: What are the risk categories?
+A: 
+- Low Risk: 0-29 (approve with standard terms)
+- Medium Risk: 30-59 (approve with higher rates/collateral)
+- High Risk: 60-100 (likely decline or significant mitigation required)
+
+Q: Can a risk score be negative?
+A: No, risk scores are always between 0 and 100.
+
+Q: What's the difference between risk score and FICO score?
+A: FICO is a standardized credit score (300-850). Risk score is our internal 0-100 calculation combining FICO and income to estimate default probability.
+
+=== Expected Credit Loss (ECL) ===
+
+Q: What is Expected Credit Loss?
+A: The estimated dollar amount a lender might lose on a loan if the borrower defaults, calculated as: Loan Amount × (Risk Score ÷ 100).
+
+Q: How is ECL used in lending decisions?
+A: ECL helps lenders:
+- Price loans appropriately (higher risk = higher interest)
+- Set reserve requirements (capital to cover potential losses)
+- Make approve/decline decisions
+- Manage portfolio risk
+
+Q: What's a typical ECL percentage?
+A: 
+- Low risk loans: 0-29% of loan amount
+- Medium risk: 30-59% of loan amount
+- High risk: 60-100% of loan amount
+
+Q: Can ECL exceed the loan amount?
+A: No, the maximum ECL is equal to the loan amount (100% loss scenario).
+
+Q: Is ECL the same as interest rate?
+A: No. ECL is expected loss. Interest rates should cover ECL plus profit margin, operating costs, and cost of funds.
+
+=== Member IDs ===
+
+Q: What do the member IDs represent?
+A: Unique identifiers for borrowers in the database. Positive IDs are typically approved loans, negative IDs represent rejected applications.
+
+Q: Why are some member IDs negative?
+A: Negative IDs distinguish rejected loan applications from the Kaggle dataset. This helps demonstrate the system can handle both approved and declined scenarios.
+
+Q: How do I find a member's information?
+A: Use prompts like "Analyze credit risk for member 63044350" or "Get data for member -76653".
+
+Q: What happens if a member doesn't exist?
+A: The system returns a graceful response with found=false and message="User not found", rather than throwing an error.
+
+Q: What are some good test member IDs?
+A:
+- 63044350: Low risk (FICO 779, approved)
+- -76653: High risk (FICO 300, declined)
+- 65190234: Low risk (FICO 744, approved)
+- -29890: Excellent (FICO 850, high income)
+
+=== Workflows ===
+
+Q: What's the difference between member lookup and direct calculation?
+A: 
+- Member lookup: Retrieves existing borrower data from database using member_id
+- Direct calculation: Assesses risk from FICO and income inputs without needing a member_id
+
+Q: Can I calculate risk without a member ID?
+A: Yes! Use prompts like "Calculate credit risk for FICO 600 and income $45,000"
+
+Q: Can the system chain multiple operations?
+A: Yes, Watsonx automatically chains skills. For example, "Complete assessment for member 63044350" will retrieve data, calculate risk, and compute ECL in sequence.
+
+Q: What are the available operations?
+A:
+1. getData (step_1_get_user_info): Lookup member by ID
+2. calculateRisk (step_2_calculate_risk): Calculate risk from FICO/income
+3. calculateECL (step_3_calculate_loss): Calculate expected credit loss
+
+=== Error Handling ===
+
+Q: What happens with invalid FICO scores?
+A: Scores below 300 or above 850 trigger warnings. The system may still process them with a logged warning.
+
+Q: Can I enter negative income?
+A: No, the system returns an error: "annual_inc must be positive"
+
+Q: What if I'm missing required information?
+A: The system returns a clear error message indicating which parameter is missing (e.g., "fico_range_high is required").
+
+Q: What does "found: false" mean?
+A: The member_id you searched for doesn't exist in the database.
+
+Q: Why does Watsonx say "beyond my capacity"?
+A: Your prompt may be too vague. Be specific with numbers and actions. Instead of "tell me about credit", try "calculate risk for FICO 650 and income $55,000".
+
+=== Use Cases ===
+
+Q: Who should use this system?
+A:
+- Loan officers: Quick applicant assessment
+- Underwriters: Risk evaluation and pricing
+- Risk managers: Portfolio analysis and ECL calculation
+- Credit analysts: Scenario modeling
+
+Q: Can I compare multiple scenarios?
+A: Yes! Ask questions like "Compare risk for FICO 600 vs 700 with $50,000 income"
+
+Q: Can I perform batch assessments?
+A: Currently, process one at a time, but you can queue multiple prompts in sequence.
+
+Q: Is this production-ready?
+A: This is a demonstration system. Production systems would include additional factors like DTI ratio, employment verification, collateral value, and regulatory compliance checks.
+
+=== Technical Questions ===
+
+Q: What technology stack is used?
+A: Python Flask REST API, Pandas for data handling, IBM Watsonx Orchestrate for AI orchestration, and Ngrok for secure tunneling.
+
+Q: How is the data stored?
+A: Currently in a CSV file (borrowers.csv) with 200 records. Production systems would use databases like PostgreSQL or cloud data warehouses.
+
+Q: Can I add more borrowers?
+A: Yes, by adding records to borrowers.csv with fields: member_id, fico_range_high, annual_inc, loan_amnt, loan_status.
+
+Q: What's the API endpoint structure?
+A:
+- POST /get_data: Member lookup
+- POST /risk_score: Risk calculation
+- POST /calc_ecl: ECL calculation
+- GET /health: System health check
+
+Q: Is the system secure?
+A: This is a demo using Ngrok tunneling. Production systems require proper authentication, encryption, PII protection, and compliance with financial regulations.
+
+=== Troubleshooting ===
+
+Q: Watsonx returns an error when I try to lookup a member
+A: Ensure you're using a valid member ID from the database. Try 63044350 or -76653.
+
+Q: My calculations seem wrong
+A: Verify:
+- FICO is between 300-850
+- Income is positive
+- Loan amount is positive
+- Risk score is 0-100
+
+Q: The system says "User not found"
+A: The member_id doesn't exist in the database. Check the member ID or try a known member like 63044350.
+
+Q: Skills aren't chaining automatically
+A: Make your prompt more explicit. Instead of "check member 63044350", say "Analyze credit risk for member 63044350 including ECL calculation".
+
+Q: Connection errors
+A: Verify:
+- Flask server is running (python app.py)
+- Ngrok tunnel is active
+- OpenAPI spec in Watsonx has correct ngrok URL

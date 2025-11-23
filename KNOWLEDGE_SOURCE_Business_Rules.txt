@@ -1,0 +1,118 @@
+CREDIT RISK ASSESSMENT BUSINESS RULES
+
+=== Risk Categories ===
+
+Low Risk (Score 0-29):
+- Action: Approve with standard terms
+- Characteristics: Strong credit profile, reliable income
+- Typical: FICO 700+, Income $60,000+
+- Expected Credit Loss: Less than 30% of loan amount
+
+Medium Risk (Score 30-59):
+- Action: Approve with higher interest rates or require collateral
+- Characteristics: Fair credit, moderate income
+- Typical: FICO 600-699, Income $40,000-$60,000
+- Expected Credit Loss: 30-60% of loan amount
+
+High Risk (Score 60-100):
+- Action: Likely decline or require significant risk mitigation
+- Characteristics: Poor credit history, low/unstable income
+- Typical: FICO below 600 or Income below $30,000
+- Expected Credit Loss: More than 60% of loan amount
+
+=== Validation Rules ===
+
+FICO Score:
+- Valid range: 300-850
+- 300 = Worst possible credit score
+- 850 = Perfect credit score
+- Scores below 300 or above 850 are invalid
+
+Annual Income:
+- Must be positive (greater than 0)
+- No upper limit
+- Zero income is technically valid but results in very high risk
+
+Loan Amount:
+- Must be positive (greater than 0)
+- No upper limit
+- Typical range: $500 - $35,000 in our dataset
+
+Risk Score:
+- Valid range: 0-100
+- 0 = No risk (perfect borrower)
+- 100 = Maximum risk (certain default)
+
+=== Workflow Steps ===
+
+Option 1: Member-Based Workflow
+1. Retrieve borrower data by member_id (step_1_get_user_info)
+2. Calculate risk score from FICO and income (step_2_calculate_risk)
+3. Calculate expected credit loss (step_3_calculate_loss)
+
+Option 2: Direct Calculation Workflow
+1. Receive FICO score and income directly from user
+2. Calculate risk score (step_2_calculate_risk)
+3. Calculate expected credit loss if loan amount provided (step_3_calculate_loss)
+
+=== Typical Scenarios ===
+
+Excellent Profile:
+- FICO 750+, Income $80,000+
+- Risk Score: 0-10
+- Decision: Approve with best rates
+
+Good Profile:
+- FICO 700-749, Income $60,000-$80,000
+- Risk Score: 10-20
+- Decision: Approve with standard rates
+
+Fair Profile:
+- FICO 650-699, Income $45,000-$60,000
+- Risk Score: 20-30
+- Decision: Approve with slightly higher rates
+
+Borderline Profile:
+- FICO 600-649, Income $35,000-$45,000
+- Risk Score: 30-40
+- Decision: Review carefully, may require collateral
+
+Poor Profile:
+- FICO 550-599, Income $25,000-$35,000
+- Risk Score: 40-55
+- Decision: Likely decline unless strong compensating factors
+
+Very Poor Profile:
+- FICO below 550 or Income below $25,000
+- Risk Score: 55+
+- Decision: Decline
+
+=== Error Handling ===
+
+Member Not Found:
+- Returns: found=false, message="User not found"
+- All data fields return null
+- HTTP Status: 200 (not an error, valid response)
+
+Invalid FICO:
+- Below 300 or above 850: Warning logged, may still process
+- Non-numeric: Returns 400 error
+
+Invalid Income:
+- Negative values: Returns 400 error "annual_inc must be positive"
+- Zero: Allowed but results in high risk score
+
+Invalid Risk Score:
+- Below 0 or above 100: Returns 400 error "risk_score must be between 0 and 100"
+
+Missing Parameters:
+- Returns 400 error with specific missing field name
+
+=== Best Practices ===
+
+1. Always check the 'found' field when looking up members
+2. Validate FICO scores are in realistic range (300-850)
+3. Consider income in context (zero income is suspicious)
+4. Risk scores near boundaries (30, 60) require manual review
+5. Very low ECL (under $100) may indicate excellent borrower
+6. Very high ECL (over 60% of loan) suggests high default probability

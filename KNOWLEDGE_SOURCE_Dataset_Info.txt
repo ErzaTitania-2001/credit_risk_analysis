@@ -1,0 +1,38 @@
+CREDIT RISK DATABASE INFORMATION
+
+Dataset: Lending Club Loans (2007-2018)
+Source: Kaggle - 2 million+ loan records
+Sample Size: 200 borrowers
+
+Risk Distribution:
+- Low Risk (<30): 140 borrowers (70%)
+- Medium Risk (30-60): 40 borrowers (20%)
+- High Risk (>60): 20 borrowers (10%)
+
+FICO Score Range: 300-850
+- 300: Worst possible credit
+- 850: Perfect credit
+- Typical range: 600-750
+
+Sample Member IDs:
+- 63044350: Low risk (FICO 779, Income $96,000, Loan $15,000, Status: Current)
+- -76653: High risk (FICO 300, Income $69,558, Loan $17,000, Status: Declined)
+- -29890: Excellent (FICO 850, Income $500,000, Loan $3,500)
+- 65190234: Low risk (FICO 744, Income $150,000, Loan $14,400)
+
+Risk Calculation Formula:
+Base Score = 100 - (FICO / 8.5)
+If Income > $80,000: Subtract 15 points
+Final Risk Score = Between 0 and 100
+
+Expected Credit Loss (ECL):
+ECL = Loan Amount × (Risk Score / 100)
+
+Examples:
+- FICO 779, Income $96k → Risk Score: 0.00 (Low)
+- FICO 650, Income $55k → Risk Score: 23.53 (Low)
+- FICO 600, Income $45k → Risk Score: 29.41 (Low/Borderline)
+- FICO 300, Income $70k → Risk Score: 64.71 (High)
+
+Data Source:
+Real loan data from Lending Club via Kaggle's "Lending Club Loan Data" dataset containing accepted and rejected loan applications from 2007-2018.
