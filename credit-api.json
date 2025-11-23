@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://unmachined-cymographic-mignon.ngrok-free.dev"
+      "url": "https://web-production-9050.up.railway.app"
     }
   ],
   "paths": {
