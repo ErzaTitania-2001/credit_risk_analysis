@@ -1,0 +1,6 @@
+member_id,loan_amnt,annual_inc,loan_status,fico_range_high
+999001,15000.0,25000.0,Declined,550.0
+999002,20000.0,30000.0,Declined,580.0
+999003,10000.0,35000.0,Declined,620.0
+999004,25000.0,40000.0,Charged Off,640.0
+999005,8000.0,28000.0,Declined,560.0

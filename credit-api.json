@@ -2,7 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Hackathon Credit System",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "description": "Credit Risk Assessment API with member lookup and direct calculation options"
   },
   "servers": [
     {
@@ -12,15 +13,22 @@
   "paths": {
     "/get_data": {
       "post": {
-        "summary": "Step 1: Get User Info",
+        "summary": "Get borrower data by member ID",
+        "description": "Lookup existing borrower information using member ID. Use this for member-based workflow.",
         "operationId": "getData",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["member_id"],
                 "properties": {
-                  "member_id": { "type": "integer", "description": "User ID (e.g., 101)" }
+                  "member_id": { 
+                    "type": "integer", 
+                    "description": "Member ID from database (e.g., 63044350 for low risk, -76653 for high risk)",
+                    "example": 63044350
+                  }
                 }
               }
             }
@@ -28,15 +36,37 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Response returned successfully (check 'found' field to determine if member exists)",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "fico_range_high": { "type": "number" },
-                    "annual_inc": { "type": "number" },
-                    "loan_amnt": { "type": "number" }
+                    "member_id": { "type": "integer" },
+                    "found": { 
+                      "type": "boolean",
+                      "description": "Whether the member was found in the database"
+                    },
+                    "message": { 
+                      "type": "string",
+                      "description": "Human-readable status message"
+                    },
+                    "fico_range_high": { 
+                      "type": ["number", "null"],
+                      "description": "FICO credit score (300-850), null if member not found"
+                    },
+                    "annual_inc": { 
+                      "type": ["number", "null"],
+                      "description": "Annual income in USD, null if member not found"
+                    },
+                    "loan_amnt": { 
+                      "type": ["number", "null"],
+                      "description": "Loan amount requested, null if member not found"
+                    },
+                    "loan_status": { 
+                      "type": ["string", "null"],
+                      "description": "Loan status, null if member not found"
+                    }
                   }
                 }
               }
@@ -47,16 +77,30 @@
     },
     "/risk_score": {
       "post": {
-        "summary": "Step 2: Calculate Risk",
-        "operationId": "getRisk",
+        "summary": "Calculate credit risk score",
+        "description": "Calculate risk score and category from FICO score and annual income. Use this for direct calculation without member lookup.",
+        "operationId": "calculateRisk",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["fico_range_high", "annual_inc"],
                 "properties": {
-                  "fico_range_high": { "type": "number" },
-                  "annual_inc": { "type": "number" }
+                  "fico_range_high": { 
+                    "type": "number",
+                    "description": "FICO credit score between 300 and 850",
+                    "minimum": 300,
+                    "maximum": 850,
+                    "example": 600
+                  },
+                  "annual_inc": { 
+                    "type": "number",
+                    "description": "Annual income in USD",
+                    "minimum": 0,
+                    "example": 45000
+                  }
                 }
               }
             }
@@ -64,34 +108,60 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Risk calculated successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "risk_score": { "type": "number" },
-                    "risk_category": { "type": "string" }
+                    "risk_score": { 
+                      "type": "number",
+                      "description": "Calculated risk score (0-100)"
+                    },
+                    "risk_category": { 
+                      "type": "string",
+                      "enum": ["Low", "Medium", "High"],
+                      "description": "Risk category: Low (<30), Medium (30-60), High (>60)"
+                    },
+                    "fico_range_high": { "type": "number" },
+                    "annual_inc": { "type": "number" }
                   }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid input parameters"
           }
         }
       }
     },
     "/calc_ecl": {
       "post": {
-        "summary": "Step 3: Calculate Loss",
-        "operationId": "getECL",
+        "summary": "Calculate expected credit loss",
+        "description": "Calculate expected credit loss based on loan amount and risk score.",
+        "operationId": "calculateECL",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["loan_amnt", "risk_score"],
                 "properties": {
-                  "loan_amnt": { "type": "number" },
-                  "risk_score": { "type": "number" }
+                  "loan_amnt": { 
+                    "type": "number",
+                    "description": "Loan amount in USD",
+                    "minimum": 0,
+                    "example": 10000
+                  },
+                  "risk_score": { 
+                    "type": "number",
+                    "description": "Risk score from 0 to 100",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "example": 45.5
+                  }
                 }
               }
             }
@@ -99,17 +169,25 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "ECL calculated successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "expected_credit_loss": { "type": "number" }
+                    "expected_credit_loss": { 
+                      "type": "number",
+                      "description": "Expected credit loss in USD"
+                    },
+                    "loan_amnt": { "type": "number" },
+                    "risk_score": { "type": "number" }
                   }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid input parameters"
           }
         }
       }

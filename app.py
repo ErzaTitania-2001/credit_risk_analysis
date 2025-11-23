@@ -67,10 +67,20 @@ def get_data():
         user = df[df['member_id'] == user_id]
         if user.empty:
             logger.warning(f"User not found: {user_id}")
-            return jsonify({"error": "User not found"}), 404
+            return jsonify({
+                "member_id": user_id,
+                "found": False,
+                "message": "User not found",
+                "fico_range_high": None,
+                "annual_inc": None,
+                "loan_amnt": None,
+                "loan_status": None
+            }), 200
         
         # Convert numpy types to native python types for JSON serialization
         result = user.iloc[0].to_dict()
+        result['found'] = True
+        result['message'] = "User found"
         for key, val in result.items():
             if pd.isna(val):
                 result[key] = None
